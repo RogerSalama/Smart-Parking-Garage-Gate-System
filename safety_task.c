@@ -11,10 +11,14 @@ void safetyTask(void *pvParameters) {
             // Obstacle logic only triggers if the gate is actively closing
             if (currentGateState == CLOSING) { 
                 currentGateState = REVERSING;  
+							
+								// Elevate LED Task priority to 5 (higher than safety task)
+                vTaskPrioritySet(xLedTaskHandle, 5);
                 
                 // CRITICAL: Release the mutex before the delay so the LED task can run!
                 xSemaphoreGive(xGateStateMutex);
-                
+                xSemaphoreGive(xLedSemaphore);
+
                 // Reverse for 0.5 seconds
                 vTaskDelay(pdMS_TO_TICKS(500)); 
                 
@@ -22,7 +26,11 @@ void safetyTask(void *pvParameters) {
                 xSemaphoreTake(xGateStateMutex, portMAX_DELAY);
                 currentGateState = STOPPED_MIDWAY;
                 xSemaphoreGive(xGateStateMutex);
-                
+                xSemaphoreGive(xLedSemaphore);
+							
+								// Restore LED Task priority to original (2)
+                vTaskPrioritySet(xLedTaskHandle, 2);
+							
             } else {
                 // If the gate is OPENING or stopped, ignore the obstacle and release the mutex
                 xSemaphoreGive(xGateStateMutex); 

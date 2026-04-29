@@ -46,6 +46,8 @@ extern QueueHandle_t xButtonEventQueue;
 extern SemaphoreHandle_t xGateStateMutex;
 extern GateState_t currentGateState;
 extern SemaphoreHandle_t xObstacleSemaphore;
+extern SemaphoreHandle_t xLedSemaphore;
+extern TaskHandle_t xLedTaskHandle;
 
 // External hardware functions (defined in main.c)
 extern void LED_Set(uint32_t color_mask);

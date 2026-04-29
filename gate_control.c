@@ -65,30 +65,28 @@ void gateControlTask(void *pvParameters) {
 
             currentGateState = nextState;
             xSemaphoreGive(xGateStateMutex);
-						
+						xSemaphoreGive(xLedSemaphore);
+						taskYIELD();
         }
     }
 }
 
 void ledControlTask(void *pvParameters) {
-    GateState_t localState;
     
     for (;;) {
         // Safely read the current state
+				xSemaphoreTake(xLedSemaphore, portMAX_DELAY);
         xSemaphoreTake(xGateStateMutex, portMAX_DELAY);
-        localState = currentGateState;
-        xSemaphoreGive(xGateStateMutex);
 
         // Update LEDs based on the state machine definitions
-        if (localState == OPENING || localState == REVERSING) {
+        if (currentGateState == OPENING || currentGateState == REVERSING) {
             LED_Set(LED_GREEN);
-        } else if (localState == CLOSING) {
+        } else if (currentGateState == CLOSING) {
             LED_Set(LED_RED);
         } else {
             // Includes IDLE_OPEN, IDLE_CLOSED, and STOPPED_MIDWAY
             LED_Set(0); // All LEDs OFF
         }
-
-        vTaskDelay(pdMS_TO_TICKS(50)); // Poll every 50ms
+				xSemaphoreGive(xGateStateMutex);
     }
 }

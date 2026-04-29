@@ -98,13 +98,22 @@
 #define LED_GREEN    (1U << 3)
 #define LED_MASK     (LED_RED | LED_BLUE | LED_GREEN)
 
-#define BTN_PF4      (1U << 4)
-#define BTN_PE0      (1U << 0)
-#define BTN_PE1      (1U << 1)
-#define BTN_PB0      (1U << 0)
-#define BTN_PB1      (1U << 1)
-#define BTN_PD0      (1U << 0)
-#define BTN_PD1      (1U << 1)
+//#define BTN_PF4      (1U << 4)
+//#define BTN_PE0      (1U << 0)
+//#define BTN_PE1      (1U << 1)
+//#define BTN_PB0      (1U << 0)
+//#define BTN_PB1      (1U << 1)
+//#define BTN_PD0      (1U << 0)
+//#define BTN_PD1      (1U << 1)
+
+#define BTN_PF4      (1U << 4) // Security Open (Moved to Port F)
+#define BTN_PF0      (1U << 0) // Security Close (Moved to Port F)
+#define BTN_PE0      (1U << 0) // Obstacle (Moved to Port E)
+#define BTN_PE1      (1U << 1) // Unused or Other
+#define BTN_PB0      (1U << 0) // Driver Open
+#define BTN_PB1      (1U << 1) // Driver Close
+#define BTN_PD0      (1U << 0) // Open Limit
+#define BTN_PD1      (1U << 1) // Closed Limit
 
 #define RCGCGPIO_ALL ((1U<<1)|(1U<<3)|(1U<<4)|(1U<<5)) // Ports B, D, E, F
 
@@ -113,11 +122,9 @@
 QueueHandle_t xButtonEventQueue;
 SemaphoreHandle_t xGateStateMutex;
 SemaphoreHandle_t xInputReadySemaphore;
-SemaphoreHandle_t xObstacleSemaphore;QueueHandle_t xButtonEventQueue;
-SemaphoreHandle_t xGateStateMutex;
-SemaphoreHandle_t xInputReadySemaphore;
 SemaphoreHandle_t xObstacleSemaphore;
-
+SemaphoreHandle_t xLedSemaphore;
+TaskHandle_t xLedTaskHandle = NULL;
 
 uint32_t ReadAllButtons(void);
 
@@ -130,16 +137,26 @@ static void GPIO_Init(void)
     SYSCTL_RCGCGPIO_R |= RCGCGPIO_ALL;
     while ((SYSCTL_PRGPIO_R & RCGCGPIO_ALL) != RCGCGPIO_ALL) { }
 
-    // Port F: LEDs (Output) and SW1 (Input)
-    GPIO_PORTF_AMSEL_R &= ~(BTN_PF4 | LED_MASK);
-    GPIO_PORTF_PCTL_R  &= ~0x000FFFF0U;
-    GPIO_PORTF_AFSEL_R &= ~(BTN_PF4 | LED_MASK);
-    GPIO_PORTF_DIR_R   |=  LED_MASK;
-    GPIO_PORTF_DIR_R   &= ~BTN_PF4;
-    GPIO_PORTF_PUR_R   |=  BTN_PF4;
-    GPIO_PORTF_DEN_R   |=  BTN_PF4 | LED_MASK;
-    GPIO_PORTF_DATA_R  &= ~LED_MASK;
+//    // Port F: LEDs (Output) and SW1 (Input)
+//    GPIO_PORTF_AMSEL_R &= ~(BTN_PF4 | LED_MASK);
+//    GPIO_PORTF_PCTL_R  &= ~0x000FFFF0U;
+//    GPIO_PORTF_AFSEL_R &= ~(BTN_PF4 | LED_MASK);
+//    GPIO_PORTF_DIR_R   |=  LED_MASK;
+//    GPIO_PORTF_DIR_R   &= ~BTN_PF4;
+//    GPIO_PORTF_PUR_R   |=  BTN_PF4;
+//    GPIO_PORTF_DEN_R   |=  BTN_PF4 | LED_MASK;
+//    GPIO_PORTF_DATA_R  &= ~LED_MASK;
 
+		// Port F: LEDs (Output) and SW1 (Input)
+    GPIO_PORTF_AMSEL_R &= ~(BTN_PF4 | BTN_PF0 | LED_MASK);
+    GPIO_PORTF_PCTL_R  &= ~0x000FFFF0U;
+    GPIO_PORTF_AFSEL_R &= ~(BTN_PF4 | BTN_PF0 | LED_MASK);
+    GPIO_PORTF_DIR_R   |=  LED_MASK;
+    GPIO_PORTF_DIR_R   &= ~(BTN_PF4 | BTN_PF0);
+    GPIO_PORTF_PUR_R   |=  (BTN_PF4 | BTN_PF0);
+    GPIO_PORTF_DEN_R   |=  (BTN_PF4 | BTN_PF0 | LED_MASK);
+    GPIO_PORTF_DATA_R  &= ~LED_MASK;
+		
     // Port E: PE0, PE1 (Inputs)
     GPIO_PORTE_AMSEL_R &= ~(BTN_PE0 | BTN_PE1);
     GPIO_PORTE_PCTL_R  &= ~0x000000FFU;
@@ -166,12 +183,19 @@ static void GPIO_Init(void)
     GPIO_PORTD_PDR_R   |=  (BTN_PD0 | BTN_PD1);
     GPIO_PORTD_DEN_R   |=  (BTN_PD0 | BTN_PD1);
 		
+//		// 1. Port F (PF4) - Falling Edge (Active Low button)
+//    GPIO_PORTF_IS_R  &= ~BTN_PF4;     // Edge sensitive
+//    GPIO_PORTF_IBE_R |=  BTN_PF4;     // both edges
+//    //GPIO_PORTF_IEV_R &= ~BTN_PF4;     // Falling edge
+//    GPIO_PORTF_ICR_R  =  BTN_PF4;     // Clear prior flags
+//    GPIO_PORTF_IM_R  |=  BTN_PF4;     // Unmask interrupt
+		
 		// 1. Port F (PF4) - Falling Edge (Active Low button)
-    GPIO_PORTF_IS_R  &= ~BTN_PF4;     // Edge sensitive
-    GPIO_PORTF_IBE_R |=  BTN_PF4;     // both edges
+    GPIO_PORTF_IS_R  &= ~(BTN_PF4 | BTN_PF0);     // Edge sensitive
+    GPIO_PORTF_IBE_R |=  (BTN_PF4 | BTN_PF0);     // both edges
     //GPIO_PORTF_IEV_R &= ~BTN_PF4;     // Falling edge
-    GPIO_PORTF_ICR_R  =  BTN_PF4;     // Clear prior flags
-    GPIO_PORTF_IM_R  |=  BTN_PF4;     // Unmask interrupt
+    GPIO_PORTF_ICR_R  =  (BTN_PF4 | BTN_PF0);     // Clear prior flags
+    GPIO_PORTF_IM_R  |=  (BTN_PF4 | BTN_PF0);     // Unmask interrupt
 
     // 2. Port E (PE0, PE1) - Rising Edge (Active High)
     GPIO_PORTE_IS_R  &= ~(BTN_PE0 | BTN_PE1);
@@ -226,10 +250,10 @@ void GPIOF_Handler(void) {
     // Initialized to pdFALSE. If giving the semaphore unblocks a 
     // higher priority task, this will be set to pdTRUE by the API.
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    uint32_t status = GPIO_PORTF_RIS_R;
 
-    // Check if SW1 (PF4) triggered the interrupt
-    if (GPIO_PORTF_RIS_R & BTN_PF4) {
-        GPIO_PORTF_ICR_R = BTN_PF4; // Acknowledge/Clear interrupt flag
+    if (status & (BTN_PF4 | BTN_PF0)) {
+        GPIO_PORTF_ICR_R = (BTN_PF4 | BTN_PF0);
         xSemaphoreGiveFromISR(xInputReadySemaphore, &xHigherPriorityTaskWoken);
     }
 
@@ -351,7 +375,7 @@ void inputTask(void *pvParameters)
                             xQueueSend(xButtonEventQueue, &msg, 0);
                         } else {
                             TickType_t duration = xTaskGetTickCount() - press_times[i];
-                            msg.event = (duration < pdMS_TO_TICKS(500)) ? 
+                            msg.event = (duration < pdMS_TO_TICKS(5000)) ? 
                                          EVENT_RELEASE_SHORT_AUTO : EVENT_RELEASE_LONG_STOP;
                             xQueueSend(xButtonEventQueue, &msg, 0);
                         }
@@ -368,20 +392,31 @@ void inputTask(void *pvParameters)
 uint32_t ReadAllButtons(void) {
     uint32_t buttons = 0;
 
-    // Port F: PF4 is Driver OPEN (Active Low, so we use ! operator)
-    if (!(GPIO_PORTF_DATA_R & (1U << 4))) buttons |= (1U << BTN_OBSTACLE);
+//    // Port F: PF4 is Driver OPEN (Active Low, so we use ! operator)
+//    if (!(GPIO_PORTF_DATA_R & (1U << 4))) buttons |= (1U << BTN_OBSTACLE);
 
-    // Port E: PE0 is Driver CLOSE, PE1 is Security OPEN (Active High)
-    if (GPIO_PORTE_DATA_R & (1U << 0)) buttons |= (1U << BTN_OPEN);
-    if (GPIO_PORTE_DATA_R & (1U << 1)) buttons |= (1U << BTN_CLOSE);
+//    // Port E: PE0 is Driver CLOSE, PE1 is Security OPEN (Active High)
+//    if (GPIO_PORTE_DATA_R & (1U << 0)) buttons |= (1U << BTN_OPEN);
+//    if (GPIO_PORTE_DATA_R & (1U << 1)) buttons |= (1U << BTN_CLOSE);
 
-    // Port B: PB0 is Security CLOSE, PB1 is Open Limit (Active High)
-    if (GPIO_PORTB_DATA_R & (1U << 0)) buttons |= (1U << BTN_SECURITY_OPEN);
-    if (GPIO_PORTB_DATA_R & (1U << 1)) buttons |= (1U << BTN_SECURITY_CLOSE);
+//    // Port B: PB0 is Security CLOSE, PB1 is Open Limit (Active High)
+//    if (GPIO_PORTB_DATA_R & (1U << 0)) buttons |= (1U << BTN_SECURITY_OPEN);
+//    if (GPIO_PORTB_DATA_R & (1U << 1)) buttons |= (1U << BTN_SECURITY_CLOSE);
 
-    // Port D: PD0 is Closed Limit, PD1 is Obstacle (Active High)
-    if (GPIO_PORTD_DATA_R & (1U << 0)) buttons |= (1U << BTN_LIMIT_OPEN);
-    if (GPIO_PORTD_DATA_R & (1U << 1)) buttons |= (1U << BTN_LIMIT_CLOSED);
+//    // Port D: PD0 is Closed Limit, PD1 is Obstacle (Active High)
+//    if (GPIO_PORTD_DATA_R & (1U << 0)) buttons |= (1U << BTN_LIMIT_OPEN);
+//    if (GPIO_PORTD_DATA_R & (1U << 1)) buttons |= (1U << BTN_LIMIT_CLOSED);
+	
+			if (GPIO_PORTE_DATA_R & (1U << 0)) buttons |= (1U << BTN_OBSTACLE);
+
+			if (GPIO_PORTD_DATA_R & (1U << 0)) buttons |= (1U << BTN_LIMIT_OPEN);
+			if (GPIO_PORTD_DATA_R & (1U << 1)) buttons |= (1U << BTN_LIMIT_CLOSED);
+
+			if (!(GPIO_PORTF_DATA_R & (1U << 4))) buttons |= (1U << BTN_SECURITY_OPEN);
+			if (!(GPIO_PORTF_DATA_R & (1U << 0))) buttons |= (1U << BTN_SECURITY_CLOSE);
+
+			if (GPIO_PORTB_DATA_R & (1U << 0)) buttons |= (1U << BTN_OPEN);
+			if (GPIO_PORTB_DATA_R & (1U << 1)) buttons |= (1U << BTN_CLOSE);
 
     return buttons;
 }
@@ -407,6 +442,7 @@ int main(void)
     xGateStateMutex = xSemaphoreCreateMutex();
     xInputReadySemaphore = xSemaphoreCreateBinary();
     xObstacleSemaphore = xSemaphoreCreateBinary(); 
+		xLedSemaphore = xSemaphoreCreateBinary();
 		
 		if (xButtonEventQueue != NULL && xGateStateMutex != NULL && 
         xInputReadySemaphore != NULL && xObstacleSemaphore != NULL) 
@@ -423,7 +459,7 @@ int main(void)
         xTaskCreate(gateControlTask, "GateCtrl",  256, NULL, 2, NULL);
 
         // LED Control Task: Medium Priority 
-        xTaskCreate(ledControlTask, "LEDTask", 128,  NULL, 2, NULL);
+        xTaskCreate(ledControlTask, "LEDTask", 128,  NULL, 2, &xLedTaskHandle);
 			
 		// Start the Scheduler
     vTaskStartScheduler();
