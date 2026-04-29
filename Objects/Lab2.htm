@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\Lab2.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\Lab2.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Wed Apr 29 19:57:55 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Wed Apr 29 20:28:38 2026
 <BR><P>
 <H3>Maximum Stack Usage =        292 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -25,10 +25,7 @@ Mutually Recursive functions
  <LI><a href="#[5]">UsageFault_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[5]">UsageFault_Handler</a><BR>
  <LI><a href="#[7]">DebugMon_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[7]">DebugMon_Handler</a><BR>
  <LI><a href="#[a]">GPIOA_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[a]">GPIOA_Handler</a><BR>
- <LI><a href="#[b]">GPIOB_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[b]">GPIOB_Handler</a><BR>
  <LI><a href="#[c]">GPIOC_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[c]">GPIOC_Handler</a><BR>
- <LI><a href="#[d]">GPIOD_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[d]">GPIOD_Handler</a><BR>
- <LI><a href="#[e]">GPIOE_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[e]">GPIOE_Handler</a><BR>
  <LI><a href="#[f]">UART0_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[f]">UART0_Handler</a><BR>
  <LI><a href="#[10]">UART1_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[10]">UART1_Handler</a><BR>
  <LI><a href="#[11]">SSI0_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[11]">SSI0_Handler</a><BR>
@@ -155,10 +152,10 @@ Function Pointers
  <LI><a href="#[27]">FLASH_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
  <LI><a href="#[59]">FPU_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
  <LI><a href="#[a]">GPIOA_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
- <LI><a href="#[b]">GPIOB_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
+ <LI><a href="#[b]">GPIOB_Handler</a> from main.o(.text.GPIOB_Handler) referenced from startup_tm4c123.o(RESET)
  <LI><a href="#[c]">GPIOC_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
- <LI><a href="#[d]">GPIOD_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
- <LI><a href="#[e]">GPIOE_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
+ <LI><a href="#[d]">GPIOD_Handler</a> from main.o(.text.GPIOD_Handler) referenced from startup_tm4c123.o(RESET)
+ <LI><a href="#[e]">GPIOE_Handler</a> from main.o(.text.GPIOE_Handler) referenced from startup_tm4c123.o(RESET)
  <LI><a href="#[28]">GPIOF_Handler</a> from main.o(.text.GPIOF_Handler) referenced from startup_tm4c123.o(RESET)
  <LI><a href="#[29]">GPIOG_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
  <LI><a href="#[2a]">GPIOH_Handler</a> from startup_tm4c123.o(.text) referenced from startup_tm4c123.o(RESET)
@@ -465,31 +462,10 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
 </UL>
-<P><STRONG><a name="[b]"></a>GPIOB_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, startup_tm4c123.o(.text))
-<BR><BR>[Calls]<UL><LI><a href="#[b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOB_Handler
-</UL>
-<BR>[Called By]<UL><LI><a href="#[b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOB_Handler
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
-</UL>
 <P><STRONG><a name="[c]"></a>GPIOC_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, startup_tm4c123.o(.text))
 <BR><BR>[Calls]<UL><LI><a href="#[c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOC_Handler
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOC_Handler
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
-</UL>
-<P><STRONG><a name="[d]"></a>GPIOD_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, startup_tm4c123.o(.text))
-<BR><BR>[Calls]<UL><LI><a href="#[d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOD_Handler
-</UL>
-<BR>[Called By]<UL><LI><a href="#[d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOD_Handler
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
-</UL>
-<P><STRONG><a name="[e]"></a>GPIOE_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, startup_tm4c123.o(.text))
-<BR><BR>[Calls]<UL><LI><a href="#[e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOE_Handler
-</UL>
-<BR>[Called By]<UL><LI><a href="#[e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOE_Handler
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
 </UL>
@@ -1315,6 +1291,27 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init_fp_1
 </UL>
 
+<P><STRONG><a name="[b]"></a>GPIOB_Handler</STRONG> (Thumb, 88 bytes, Stack size 16 bytes, main.o(.text.GPIOB_Handler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = GPIOB_Handler &rArr; xQueueGiveFromISR &rArr; xTaskRemoveFromEventList
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGiveFromISR
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
+</UL>
+<P><STRONG><a name="[d]"></a>GPIOD_Handler</STRONG> (Thumb, 88 bytes, Stack size 16 bytes, main.o(.text.GPIOD_Handler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = GPIOD_Handler &rArr; xQueueGiveFromISR &rArr; xTaskRemoveFromEventList
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGiveFromISR
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
+</UL>
+<P><STRONG><a name="[e]"></a>GPIOE_Handler</STRONG> (Thumb, 88 bytes, Stack size 16 bytes, main.o(.text.GPIOE_Handler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = GPIOE_Handler &rArr; xQueueGiveFromISR &rArr; xTaskRemoveFromEventList
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGiveFromISR
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
+</UL>
 <P><STRONG><a name="[28]"></a>GPIOF_Handler</STRONG> (Thumb, 96 bytes, Stack size 16 bytes, main.o(.text.GPIOF_Handler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = GPIOF_Handler &rArr; xQueueGiveFromISR &rArr; xTaskRemoveFromEventList
 </UL>
@@ -1784,7 +1781,10 @@ Global Symbols
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortValidateInterruptPriority
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxTaskGetNumberOfTasks
 </UL>
-<BR>[Called By]<UL><LI><a href="#[28]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOF_Handler
+<BR>[Called By]<UL><LI><a href="#[e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOE_Handler
+<LI><a href="#[d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOD_Handler
+<LI><a href="#[b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOB_Handler
+<LI><a href="#[28]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOF_Handler
 </UL>
 
 <P><STRONG><a name="[aa]"></a>xQueueReceive</STRONG> (Thumb, 434 bytes, Stack size 56 bytes, queue.o(.text.xQueueReceive))

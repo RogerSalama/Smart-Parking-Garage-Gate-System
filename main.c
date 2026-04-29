@@ -237,7 +237,7 @@ void GPIOF_Handler(void) {
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-void GPIOPortB_Handler(void) {
+void GPIOB_Handler(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     uint32_t status = GPIO_PORTB_RIS_R;
     
@@ -250,7 +250,7 @@ void GPIOPortB_Handler(void) {
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-void GPIOPortD_Handler(void) {
+void GPIOD_Handler(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     uint32_t status = GPIO_PORTD_RIS_R;
     
@@ -263,7 +263,7 @@ void GPIOPortD_Handler(void) {
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-void GPIOPortE_Handler(void) {
+void GPIOE_Handler(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     uint32_t status = GPIO_PORTE_RIS_R;
     
